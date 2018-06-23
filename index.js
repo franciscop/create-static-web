@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+console.log(process.cwd());
 
 // Static website generator. Compiles three things:
 // - Handlbars: compile all "name.hbs" into "name.html"
@@ -51,9 +52,10 @@ const ext = (...end) => src => end.find(ext => src.slice(-ext.length) === ext);
 
 
 const compile = (err, file) => {
+  console.log('changed:', file);
 
   // All of the valid filenames within the project
-  const walked = walk(__dirname).filter(ignore).filter(src => filter.test(src));
+  const walked = walk(process.cwd()).filter(ignore).filter(src => filter.test(src));
 
   const templates = { hbs: {}, liquid: {}, pug: {} };
 
@@ -66,12 +68,6 @@ const compile = (err, file) => {
 
   walked.filter(isPartial).filter(ext('liquid')).forEach(src => {
     templates.liquid[name(src, '.liquid').slice(1)] = src;
-  });
-
-  // Render any .hbs in the page in place for a .html file
-  walked.filter(isFull).filter(ext('hbs')).forEach(src => {
-    const output = src.replace(/\.hbs$/, '.html');
-    write(output, hbs.compile(read(src))({ blog }));
   });
 
   // Actual markdown parsing
@@ -93,18 +89,26 @@ const compile = (err, file) => {
     }
   });
 
+  // Render any .hbs in the page in place for a .html file
+  walked.filter(isFull).filter(ext('hbs')).forEach(src => {
+    const output = src.replace(/\.hbs$/, '.html');
+    write(output, hbs.compile(read(src))({ blog }));
+  });
+
   // The SASS or SCSS is being modified, rebuild them all
-  if (!file || /\.s(a|c)ss$/.test(file)) {
+  // if (!file || /\.s(a|c)ss$/.test(file)) {
     // Only main scss that are not partials (ignore "_name.scss" )
-    walked.filter(isFull).filter(ext('scss')).forEach(style => {
-      const options = { file: style, outputStyle: 'compressed' };
-      const output = style.replace(/\.s(a|c)ss$/, '.min.css');
+    console.log("Styles:", walked.filter(isFull).filter(ext('scss')));
+    walked.filter(isFull).filter(ext('scss')).forEach(src => {
+      const options = { file: src, outputStyle: 'compressed' };
+      const output = src.replace(/\.s(a|c)ss$/, '.min.css');
+      console.log('Rendering', src);
       write(output, sass.renderSync(options).css.toString());
     });
-  }
+  // }
 };
 
-watch(__dirname, { recursive: true, filter }, compile);
+watch(process.cwd(), { recursive: true, filter }, compile);
 compile();
 
 start({ port: 3000, host: "localhost", open: true });
