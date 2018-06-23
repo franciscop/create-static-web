@@ -1,5 +1,4 @@
 #! /usr/bin/env node
-console.log(process.cwd());
 
 // Static website generator. Compiles three things:
 // - Handlbars: compile all "name.hbs" into "name.html"
@@ -52,8 +51,6 @@ const ext = (...end) => src => end.find(ext => src.slice(-ext.length) === ext);
 
 
 const compile = (err, file) => {
-  console.log('changed:', file);
-
   // All of the valid filenames within the project
   const walked = walk(process.cwd()).filter(ignore).filter(src => filter.test(src));
 
@@ -96,16 +93,14 @@ const compile = (err, file) => {
   });
 
   // The SASS or SCSS is being modified, rebuild them all
-  // if (!file || /\.s(a|c)ss$/.test(file)) {
+  if (!file || /\.s(a|c)ss$/.test(file)) {
     // Only main scss that are not partials (ignore "_name.scss" )
-    console.log("Styles:", walked.filter(isFull).filter(ext('scss')));
     walked.filter(isFull).filter(ext('scss')).forEach(src => {
       const options = { file: src, outputStyle: 'compressed' };
       const output = src.replace(/\.s(a|c)ss$/, '.min.css');
-      console.log('Rendering', src);
       write(output, sass.renderSync(options).css.toString());
     });
-  // }
+  }
 };
 
 watch(process.cwd(), { recursive: true, filter }, compile);
