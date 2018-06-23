@@ -1,20 +1,22 @@
-#! /usr/bin/env node
-
 // Static website generator. Compiles three things:
 // - Handlbars: compile all "name.hbs" into "name.html"
 // - Markdown: compile all "name.md" into "index.html" using the layout template
 // - SASS: compile all "name.scss" into "name.min.css"
 // All of this while ignoring the partials (filenames startig by "_")
+// import { start } from 'live-server';
+
+import ignoreFiles from 'ignore';
+import marked from 'marked';
+import watch from 'node-watch';
+import fm from 'front-matter';
+import { abs, dir, exists, join, name, read, stat, walk, write } from 'fs-array';
+// https://github.com/rollup/rollup-plugin-commonjs/issues/131
+import hbs from 'handlebars/lib/handlebars.js';
+
+const sass = require('node-sass');
+const liquid = require('liquidjs')().parseAndRender.bind(require('liquidjs')());
 const { start } = require("live-server");
 
-const ignoreFiles = require('ignore');
-const marked = require('marked');
-const hbs = require('handlebars');
-const liquid = require('liquidjs')();
-const sass = require('node-sass');
-const watch = require('node-watch');
-const fm = require('front-matter');
-const { abs, dir, exists, join, name, read, stat, walk, write } = require('fs-array');
 
 // Check whether a folder has a 'readme.md' file or not
 const hasReadme = src => exists(join(src, 'readme.md'));
@@ -76,7 +78,8 @@ const compile = (err, file) => {
       return console.log(`Couldn't find template "${layout}". Make sure you have a file named "${data.layout}"`);
     }
     if (ext === 'liquid') {
-      liquid.renderFile(templates.liquid[layout], data).then(html => {
+      // liquid([read(templates.liquid[layout])], data).then(html => {
+      liquid(read(templates.liquid[layout]), data).then(html => {
         write(join(data.folder, 'index.html'), html);
       });
     }
