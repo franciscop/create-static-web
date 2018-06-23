@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hello world!</title>
+    <link rel="stylesheet" href="https://unpkg.com/picnic">
+    <link rel="stylesheet" href="/style.min.css">
+  </head>
+  <body>
+    <em>Rendered with Liquid!</em>
+    <h1 id="create-static-web">Create-Static-Web</h1>
+<p>Another static site generator:</p>
+<pre><code class="language-bash">$ npm install create-static-web -g
+$ web</code></pre>
+<table>
+<thead>
+<tr>
+<th>Transformations</th>
+<th>Features</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.liquid</code> <code>.hbs</code> → <code>.html</code></td>
+<td>• Works out of the box</td>
+</tr>
+<tr>
+<td><code>.md</code> + <code>layout:</code> → <code>.html</code></td>
+<td>• Livereload</td>
+</tr>
+<tr>
+<td><code>.scss</code> <code>.sass</code> → <code>.min.css</code></td>
+<td>• Extensible with hooks [WIP]</td>
+</tr>
+<tr>
+<td><code>.src.js</code> → <code>.min.js</code> [WIP]</td>
+<td>• Basic compatibility with Jekyll</td>
+</tr>
+</tbody></table>
+<h2 id="getting-started">Getting Started</h2>
+<p>Create your <code>readme.md</code>:</p>
+<pre><code class="language-md">---
+layout: hello.hbs
+---
+
+Front-matter enabled website</code></pre>
+<p>Also your <code>_hello.hbs</code> file:</p>
+<pre><code class="language-js">&lt;p&gt;{{ content }}&lt;/p&gt;</code></pre>
+<p>Voila! Your site should be ready to go:</p>
+<pre><code class="language-html">&lt;p&gt;Front-matter enabled website&lt;/p&gt;</code></pre>
+<h2 id="demo">Demo</h2>
+<p>Clone this repo and run web:</p>
+<pre><code class="language-bash">$ git clone
+</code></pre>
+<h2 id="automatic-compilation">Automatic compilation</h2>
+<p>The command <code>web</code> will automatically compile some extensions (explained below). <strong>Except</strong> if they also start by an underscore. Then they will be considered partials and not be rendered by default.</p>
+<h3 id="liquid-template">Liquid template</h3>
+<p>These will be rendered (excluding <a href="#partials">Partials</a>) into a file with the same name and the extension <code>html</code>:</p>
+<ul>
+<li><code>./index.liquid</code> → <code>./index.html</code></li>
+<li><code>./demo.liquid</code> → <code>./demo.html</code></li>
+<li><code>./blog/index.liquid</code> → <code>./blog/index.html</code></li>
+</ul>
+<p>They will receive the data as specified in the <a href="#data-specification">Data Specification</a>:</p>
+<pre><code class="language-html">// index.liquid
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;{{title}}&lt;/title&gt;
+    ...
+  &lt;/head&gt;
+  ...
+&lt;/html&gt;</code></pre>
+<h3 id="sass-and-scss">SASS and SCSS</h3>
+<p>The style files (excluding <a href="#partials">Partials</a>) will be compiled to a file with the same name in the same folder, with the extension <code>.min.css</code>:</p>
+<ul>
+<li><code>./style.scss</code> → <code>./style.min.css</code></li>
+<li><code>./demo.scss</code> → <code>./demo.min.css</code></li>
+<li><code>./blog/style.scss</code> → <code>./blog/style.min.css</code></li>
+</ul>
+<p>Then you have to include it in your template as normal:</p>
+<pre><code class="language-hbs">// index.hbs
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    ...
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/style.min.css&quot;&gt;
+  &lt;/head&gt;
+  ...
+&lt;/html&gt;</code></pre>
+<p>Files ending with these extensions will be automatically compiled:</p>
+<p><code>.liquid</code>, <code>.hbs</code>, <code>.sass</code>, <code>.scss</code></p>
+<p>They are compiled to the same folder with the same filename. SASS and SCSS will add a <code>.min</code> to the extension to differentiate in case you have any <code>.css</code>.</p>
+<h2 id="partials">Partials</h2>
+<p>Partials are useful in two situation: as layouts and to be included in another files.</p>
+<h2 id="data-specification">Data Specification</h2>
+<blockquote>
+<p>Work in Progress</p>
+</blockquote>
+<p>Any <code>.json</code> found in the filesystem will be parsed and its value will be set into a variable with the same name as the filename:</p>
+<p>For example, for the filename <code>info.json</code>:</p>
+<pre><code class="language-json">{ &quot;title&quot;: &quot;My Cool Website&quot; }</code></pre>
+<p>You can access this variable within your templates as:</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;{{info.title}}&lt;/title&gt;
+    ...
+  &lt;/head&gt;
+  ...
+&lt;/html&gt;</code></pre>
+<h3 id="front-matter">Front Matter</h3>
+<p>There is a special variable called <code>content</code> (aliased as <code>body</code>) which represents the Markdown content as html into your template:</p>
+<pre><code class="language-html">// index.liquid
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;{{title}}&lt;/title&gt;
+    ...
+  &lt;/head&gt;
+  &lt;body&gt;
+    {{ content }}
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+  </body>
+</html>

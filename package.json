@@ -1,0 +1,26 @@
+{
+  "name": "static",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "web": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "front-matter": "^2.3.0",
+    "fs-array": "^1.2.0",
+    "handlebars": "^4.0.11",
+    "ignore": "^4.0.2",
+    "liquidjs": "^4.0.0",
+    "live-server": "^1.2.0",
+    "marked": "^0.4.0",
+    "node-sass": "^4.9.0",
+    "node-watch": "^0.5.8"
+  }
+}
