@@ -13,10 +13,12 @@ import { abs, dir, exists, join, name, read, stat, walk, write } from 'fs-array'
 // https://github.com/rollup/rollup-plugin-commonjs/issues/131
 import hbs from 'handlebars/lib/handlebars.js';
 
-const sass = require('node-sass');
-const liquid = require('liquidjs')().parseAndRender.bind(require('liquidjs')());
-const { start } = require("live-server");
+import Liquid from 'liquidjs';
+const liquid = Liquid().parseAndRender.bind(Liquid());
 
+// const liquid = require('liquidjs')().parseAndRender.bind(require('liquidjs')());
+const sass = require('node-sass');
+const { start } = require('live-server');
 
 // Check whether a folder has a 'readme.md' file or not
 const hasReadme = src => exists(join(src, 'readme.md'));
@@ -92,6 +94,12 @@ const compile = (err, file) => {
   // Render any .hbs in the page in place for a .html file
   walked.filter(isFull).filter(ext('hbs')).forEach(src => {
     const output = src.replace(/\.hbs$/, '.html');
+    write(output, hbs.compile(read(src))({ blog }));
+  });
+
+  // Render any .hbs in the page in place for a .html file
+  walked.filter(isFull).filter(ext('liquid')).forEach(src => {
+    const output = src.replace(/\.liquid$/, '.html');
     write(output, hbs.compile(read(src))({ blog }));
   });
 
