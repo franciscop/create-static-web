@@ -13,10 +13,10 @@ import { abs, dir, exists, join, name, read, stat, walk, write } from 'fs-array'
 // https://github.com/rollup/rollup-plugin-commonjs/issues/131
 import hbs from 'handlebars/lib/handlebars.js';
 
-import Liquid from 'liquidjs';
-const liquid = Liquid().parseAndRender.bind(Liquid());
+// import Liquid from 'liquidjs';
+// const liquid = Liquid().parseAndRender.bind(Liquid());
 
-// const liquid = require('liquidjs')().parseAndRender.bind(require('liquidjs')());
+const liquid = require('liquidjs')().parseAndRender.bind(require('liquidjs')());
 const sass = require('node-sass');
 const { start } = require('live-server');
 
