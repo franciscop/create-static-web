@@ -83,7 +83,6 @@ const compile = (err, file) => {
       return console.log(`Couldn't find template "${layout}". Make sure you have a file named "${data.layout}"`);
     }
     if (ext === 'liquid') {
-      // liquid([read(templates.liquid[layout])], data).then(html => {
       liquid(read(templates.liquid[layout]), data).then(html => {
         write(join(data.folder, 'index.html'), html);
       });
@@ -102,8 +101,13 @@ const compile = (err, file) => {
 
   // Render any .hbs in the page in place for a .html file
   walked.filter(isFull).filter(ext('liquid')).forEach(src => {
+    const { attributes, body } = fm(read(src));
     const output = src.replace(/\.liquid$/, '.html');
-    write(output, hbs.compile(read(src))({ blog }));
+    liquid(body, { ...attributes, blog }).then(html => {
+      setTimeout(() => {
+        write(output, html);
+      }, 100);
+    });
   });
 
   // The SASS or SCSS is being modified, rebuild them all
