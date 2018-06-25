@@ -1,6 +1,6 @@
 {
   "name": "create-static-web",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "--- layout: web.liquid title: Hello world! destination: public/index.html ---",
   "main": "index.js",
   "bin": {
