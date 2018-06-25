@@ -103,10 +103,10 @@ const compile = (err, file) => {
   walked.filter(isFull).filter(ext('liquid')).forEach(src => {
     const { attributes, body } = fm(read(src));
     const output = src.replace(/\.liquid$/, '.html');
-    liquid(body, { ...attributes, blog }).then(html => {
-      setTimeout(() => {
-        write(output, html);
-      }, 100);
+    // Render the body, then the layout around it
+    liquid(body, { ...attributes, blog }).then(async content => {
+      content = await liquid(read(templates.liquid[attributes.layout]), { ...attributes, blog, content });
+      write(output, content);
     });
   });
 
