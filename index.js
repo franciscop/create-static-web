@@ -16,11 +16,10 @@ import hbs from 'handlebars/lib/handlebars.js';
 // import Liquid from 'liquidjs';
 // const liquid = Liquid().parseAndRender.bind(Liquid());
 
-const Liquid = require('liquidjs')();
-const filters = require('liquidjs/filters');
-filters(Liquid);
-// Liquid.registerFilter('add', (initial, arg1, arg2) => initial + arg1 + arg2)
-const liquid = Liquid.parseAndRender.bind(Liquid);
+const Liquid = require('liquidjs');
+const engine = Liquid();
+const liquid = (...args) => engine.parseAndRender(...args);
+
 const sass = require('node-sass');
 const { start } = require('live-server');
 
