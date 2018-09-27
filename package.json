@@ -10,8 +10,16 @@
     "build": "rollup -c && node ./bin.js",
     "test": ""
   },
-  "keywords": ["create", "static", "web", "site", "generator"],
-  "files": ["src"],
+  "keywords": [
+    "create",
+    "static",
+    "web",
+    "site",
+    "generator"
+  ],
+  "files": [
+    "src"
+  ],
   "author": "Francisco Presencia <public@francisco.io> (https://francisco.io/)",
   "license": "MIT",
   "dependencies": {
