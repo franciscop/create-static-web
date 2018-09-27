@@ -13,12 +13,10 @@ const templates = {};
 
 module.exports = async (files) => {
   try {
-    if (typeof files === 'string') files = [files];
-
     const handlebars = require('handlebars');
 
     const base = walk().filter(await ignoreFiles());
-    files = files ? magic(files) : base;
+    files = files && (/\.md/.test(files)) ? magic([files]) : base;
 
     const liq = await base
       .filter(isPartial)
