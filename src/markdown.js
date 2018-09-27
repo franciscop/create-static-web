@@ -41,6 +41,7 @@ module.exports = async (files) => {
       .filter(({ layout }) => layout)
       .map(({ body, ...data }) => ({ ...data, body: marked(body) }))
       .map(async data => {
+        data.id = data.name === 'readme' ? data.folder.split('/').pop() : data.name;
         const name = data.name === 'readme' ? 'index' : data.name;
         const file = join(data.folder, name + '.html');
 
