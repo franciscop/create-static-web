@@ -1,127 +1,47 @@
-// Static website generator. Compiles three things:
-// - Handlbars: compile all "name.hbs" into "name.html"
-// - Markdown: compile all "name.md" into "index.html" using the layout template
-// - SASS: compile all "name.scss" into "name.min.css"
-// All of this while ignoring the partials (filenames startig by "_")
-// import { start } from 'live-server';
+#! /usr/bin/env node
 
-import ignoreFiles from 'ignore';
-import marked from 'marked';
-import watch from 'node-watch';
-import fm from 'front-matter';
-import { abs, dir, exists, join, name, read, stat, walk, write } from 'fs-array';
-// https://github.com/rollup/rollup-plugin-commonjs/issues/131
-import hbs from 'handlebars/lib/handlebars.js';
-
-// import Liquid from 'liquidjs';
-// const liquid = Liquid().parseAndRender.bind(Liquid());
-
-const Liquid = require('liquidjs');
-const engine = Liquid();
-const liquid = (...args) => engine.parseAndRender(...args);
-
-const sass = require('node-sass');
+// Static website generator
+const watch = require('node-watch');
+const Listr = require('listr');
 const { start } = require('live-server');
 
-// Check whether a folder has a 'readme.md' file or not
-const hasReadme = src => exists(join(src, 'readme.md'));
+const markdown = require('./src/markdown');
+const sass = require('./src/sass');
 
-// Find all the relevant data for a blog post entry (a folder)
-const parseData = (file, i, blog) => {
-  // const file = join(folder, 'readme.md');
-  const folder = file.replace(/readme\.md$/, '');
-  const { attributes: { layout, ...attr }, body } = fm(read(file));
-  if (!layout) return;
-  attr.layout = layout + ((/\.\w+$/.test(layout)) ? '' : '.liquid');
-  attr.layout = '_' + attr.layout.replace(/^_/, '');
-  return {
-    id: folder.split('/').slice(-2).shift(),
-    file,
-    folder,
-    ...attr,
-      // Create the main handlebars template based on the selected layout
-    // template: hbs.compile(`{{> ${attr.layout}}}`),
-    body: marked(body)
-  };
-};
-
-// Folders to ignore
-const svc = ignoreFiles().add('.git');
-if (exists('.gitignore')) svc.add(read('.gitignore'));
-const ignore = src => !svc.ignores(src);
-
-// Extensions to handle to changes
 const filter = /\.(js|sass|scss|md|hbs|liquid)$/;
-const isPartial = src => name(src)[0] === '_';
-const isFull = src => !isPartial(src);
-const ext = (...end) => src => end.find(ext => src.slice(-ext.length) === ext);
+const wait = time => new Promise(resolve => setTimeout(resolve, time));
 
-
-const compile = (err, file) => {
-  // All of the valid filenames within the project
-  const walked = walk(process.cwd()).filter(ignore).filter(src => filter.test(src));
-
-  const templates = { hbs: {}, liquid: {}, pug: {} };
-
-  // Handlebars import all '_name.hbs' in the blog folder as partials
-  walked.filter(isPartial).filter(ext('hbs')).forEach(src => {
-    const file = name(src, '.hbs').slice(1);
-    templates.hbs[file] = read(src);
-    hbs.registerPartial(file, read(src));
-  });
-
-  walked.filter(isPartial).filter(ext('liquid')).forEach(src => {
-    templates.liquid[name(src, '.liquid').slice(1)] = src;
-  });
-
-  // Actual markdown parsing
-  // const blog = dir(folder).filter(hasReadme).map(parseData).filter(a => a);
-  const blog = walked.filter(ext('md')).map(parseData).filter(Boolean);
-  blog.forEach(data => {
-    const [layout, ext] = data.layout.slice(1).split('.');
-    if (!templates[ext][layout]) {
-      return console.log(`Couldn't find template "${layout}". Make sure you have a file named "${data.layout}"`);
+const compile = async (err, file) => {
+  // Clear the console
+  process.stdout.write('\033c');
+  console.log('📜 Create Static Web');
+  new Listr([
+    {
+      title: file ? `Changed: ${file.replace(process.cwd(), '.')}` : 'Cold startup. It will take a while.',
+      task: () => wait(300)
+    },
+    {
+      title: 'Content: .md, .hbs, .liquid → .html',
+      skip: () => file && !/\.(md|hbs|liquid)$/.test(file),
+      task: () => markdown(file)
+    },
+    {
+      title: 'Stylesheets: .sass → .min.css',
+      skip: () => file && !/\.(sass|scss)$/.test(file),
+      task: () => sass()
+    },
+    {
+      title: '[TODO] Javascript: .src.js → .min.js',
+      skip: () => file && !/\.src\.js$/.test(file),
+      task: () => wait(300)
+    },
+    {
+      title: file ? '[TODO] Reloading browser' : '[TODO] Launching browser',
+      task: () => wait(300)
     }
-    if (ext === 'liquid') {
-      liquid(read(templates.liquid[layout]), data).then(html => {
-        write(join(data.folder, 'index.html'), html);
-      });
-    }
-    if (ext === 'hbs') {
-      const html = hbs.compile(`{{> ${layout}}}`)(data);
-      write(join(data.folder, 'index.html'), html);
-    }
-  });
-
-  // Render any .hbs in the page in place for a .html file
-  walked.filter(isFull).filter(ext('hbs')).forEach(src => {
-    const output = src.replace(/\.hbs$/, '.html');
-    write(output, hbs.compile(read(src))({ blog }));
-  });
-
-  // Render any .hbs in the page in place for a .html file
-  walked.filter(isFull).filter(ext('liquid')).forEach(src => {
-    const { attributes, body } = fm(read(src));
-    const output = src.replace(/\.liquid$/, '.html');
-    // Render the body, then the layout around it
-    liquid(body, { ...attributes, blog }).then(async content => {
-      content = await liquid(read(templates.liquid[attributes.layout]), { ...attributes, blog, content });
-      write(output, content);
-    });
-  });
-
-  // The SASS or SCSS is being modified, rebuild them all
-  if (!file || /\.s(a|c)ss$/.test(file)) {
-    // Only main scss that are not partials (ignore "_name.scss" )
-    walked.filter(isFull).filter(ext('scss')).forEach(src => {
-      const options = { file: src, outputStyle: 'compressed' };
-      const output = src.replace(/\.s(a|c)ss$/, '.min.css');
-      write(output, sass.renderSync(options).css.toString());
-    });
-  }
+  ]).run();
 };
 
 watch(process.cwd(), { recursive: true, filter }, compile);
 compile();
-
-start({ port: 3000, host: "localhost", open: true });
+start({ port: 3000, host: "localhost", logLevel: 0, open: true, ignore: /\.(scss|md)$/ });

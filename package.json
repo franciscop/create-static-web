@@ -4,39 +4,30 @@
   "description": "--- layout: web.liquid title: Hello world! destination: public/index.html ---",
   "main": "index.js",
   "bin": {
-    "web": "bin.js"
+    "web": "index.js"
   },
   "scripts": {
     "build": "rollup -c && node ./bin.js",
     "test": ""
   },
-  "keywords": [],
+  "keywords": ["create", "static", "web", "site", "generator"],
+  "files": ["src"],
   "author": "Francisco Presencia <public@francisco.io> (https://francisco.io/)",
   "license": "MIT",
   "dependencies": {
-    "liquidjs": "^4.0.0",
-    "live-server": "^1.2.0",
-    "node-sass": "^4.9.0"
-  },
-  "devDependencies": {
-    "babel-core": "^6.26.3",
-    "builtin-modules": "^3.0.0",
     "front-matter": "^2.3.0",
-    "fs-array": "^1.2.0",
+    "fs-array": "^2.1.2",
     "handlebars": "^4.0.11",
     "ignore": "^4.0.2",
+    "liquidjs": "^4.0.0",
+    "listr": "^0.14.1",
+    "live-server": "^1.2.0",
     "marked": "^0.4.0",
-    "node-watch": "^0.5.8",
-    "rollup": "^0.61.2",
-    "rollup-plugin-babel": "^3.0.4",
-    "rollup-plugin-commonjs": "^9.1.3",
-    "rollup-plugin-inject": "^2.0.0",
-    "rollup-plugin-json": "^3.0.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-globals": "^1.2.1",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-re": "^1.0.7"
+    "magic-promises": "^1.1.1",
+    "node-sass": "^4.9.3",
+    "node-watch": "^0.5.8"
   },
+  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/franciscop/create-static-web.git"

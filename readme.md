@@ -1,9 +1,3 @@
----
-layout: web.liquid
-title: Hello world!
-destination: public/index.html
----
-
 # Create-Static-Web
 
 Another static site generator:

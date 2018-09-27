@@ -1,3 +1,3 @@
 #! /usr/bin/env node
 
-require('./index.min.js');
+require('./index.js');
