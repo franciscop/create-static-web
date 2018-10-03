@@ -24,11 +24,35 @@ module.exports = async (files) => {
       .map(async file => [clean(file), await read(file)])
       .reduce((obj, [name, value]) => ({ ...obj, [name]: value }), {});
 
+    await base
+      .filter(isFull)
+      .filter(file => /\.liquid/.test(file))
+      .map(async file => ({ name: clean(file), folder: dir(file), text: await read(file) }))
+      .map(async data => {
+        data.id = data.name === 'readme' ? data.folder.split('/').pop() : data.name;
+        data.name = data.name === 'readme' ? 'index' : data.name;
+        const file = join(data.folder, data.name + '.html');
+        const html = await liquid(data.text, data);
+        return write(file, html);
+      });
+
     const hbs = await base
       .filter(isPartial)
       .filter(file => /\.hbs/.test(file))
       .map(async file => [clean(file), await read(file)])
       .map(([name, content]) => handlebars.registerPartial(name, content));
+
+    await base
+      .filter(isFull)
+      .filter(file => /\.hbs/.test(file))
+      .map(async file => ({ name: clean(file), folder: dir(file), text: await read(file) }))
+      .map(data => {
+        data.id = data.name === 'readme' ? data.folder.split('/').pop() : data.name;
+        data.name = data.name === 'readme' ? 'index' : data.name;
+        const file = join(data.folder, data.name + '.html');
+        const html = handlebars.compile(data.text)(data);
+        return write(file, html);
+      });
 
     return files
       .filter(isFull)
