@@ -24,7 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "front-matter": "^2.3.0",
-    "fs-array": "^2.1.2",
+    "fs-array": "^2.2.1",
     "handlebars": "^4.0.11",
     "ignore": "^4.0.2",
     "liquidjs": "^4.0.0",

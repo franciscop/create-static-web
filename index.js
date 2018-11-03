@@ -7,8 +7,9 @@ const { start } = require('live-server');
 
 const markdown = require('./src/markdown');
 const sass = require('./src/sass');
+const image = require('./src/image');
 
-const filter = /\.(js|sass|scss|md|hbs|liquid)$/;
+const filter = /\.(js|sass|scss|md|hbs|liqui|jpg|jpeg)$/;
 const wait = time => new Promise(resolve => setTimeout(resolve, time));
 
 const compile = async (err, file) => {
@@ -32,12 +33,17 @@ const compile = async (err, file) => {
         task: () => sass()
       },
       {
+        title: 'Images: .src.jpg → .min.jpg',
+        skip: () => file && !/\.src\.jpe?g$/.test(file),
+        task: () => image()
+      },
+      {
         title: '[TODO] Javascript: .src.js → .min.js',
         skip: () => file && !/\.src\.js$/.test(file),
         task: () => wait(300)
       },
       {
-        title: file ? '[TODO] Reloading browser' : '[TODO] Launching browser',
+        title: file ? 'Browser reloaded' : 'Browser opened',
         task: () => wait(300)
       }
     ]).run();
