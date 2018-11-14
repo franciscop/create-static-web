@@ -28,11 +28,12 @@ module.exports = async (files) => {
       .filter(isFull)
       .filter(file => /\.liquid/.test(file))
       .map(async file => ({ name: clean(file), folder: dir(file), text: await read(file) }))
-      .map(async data => {
+      .map(async ({ text, ...data }) => {
+        const { attributes, body } = fm(text);
         data.id = data.name === 'readme' ? data.folder.split('/').pop() : data.name;
         data.name = data.name === 'readme' ? 'index' : data.name;
         const file = join(data.folder, data.name + '.html');
-        const html = await liquid(data.text, data);
+        const html = await liquid(body, { ...data, ...attributes });
         return write(file, html);
       });
 
@@ -46,11 +47,12 @@ module.exports = async (files) => {
       .filter(isFull)
       .filter(file => /\.hbs/.test(file))
       .map(async file => ({ name: clean(file), folder: dir(file), text: await read(file) }))
-      .map(data => {
+      .map(({ text, ...data }) => {
+        const { attributes, body } = fm(text);
         data.id = data.name === 'readme' ? data.folder.split('/').pop() : data.name;
         data.name = data.name === 'readme' ? 'index' : data.name;
         const file = join(data.folder, data.name + '.html');
-        const html = handlebars.compile(data.text)(data);
+        const html = handlebars.compile(body)({ ...data, ...attributes });
         return write(file, html);
       });
 
