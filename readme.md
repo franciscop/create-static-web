@@ -30,7 +30,7 @@ Front-matter enabled website
 Also your `_hello.hbs` file:
 
 ```js
-<p>{{ content }}</p>
+<p>{{ body }}</p>
 ```
 
 Voila! Your site should be ready to go:
@@ -157,7 +157,7 @@ There is a special variable called `content` (aliased as `body`) which represent
     ...
   </head>
   <body>
-    {{ content }}
+    {{ body }}
   </body>
 </html>
 ```
