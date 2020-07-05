@@ -119,30 +119,13 @@ They are compiled to the same folder with the same filename. SASS and SCSS will 
 Partials are useful in two situation: as layouts and to be included in another files.
 
 
+
+
 ## Data Specification
 
-> Work in Progress
+A file called `static.config.js` **in the same folder** where the script is being run will be loaded as a configuration script.
 
-Any `.json` found in the filesystem will be parsed and its value will be set into a variable with the same name as the filename:
 
-For example, for the filename `info.json`:
-
-```json
-{ "title": "My Cool Website" }
-```
-
-You can access this variable within your templates as:
-
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{{info.title}}</title>
-    ...
-  </head>
-  ...
-</html>
-```
 
 ### Front Matter
 
