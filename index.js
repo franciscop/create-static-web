@@ -40,7 +40,7 @@ const compile = async (err, file) => {
           file &&
           !/\.(md|hbs|liquid)$/.test(file) &&
           !/static\.config\.js$/.test(file),
-        task: () => markdown(file),
+        task: markdown,
       },
       {
         title: "Stylesheets: .sass → .min.css",
@@ -48,7 +48,7 @@ const compile = async (err, file) => {
           file &&
           !/\.(sass|scss)$/.test(file) &&
           !/static\.config\.js$/.test(file),
-        task: () => sass(),
+        task: sass,
       },
       {
         title: "Images: .src.jpg → .min.jpg",
@@ -68,7 +68,7 @@ const compile = async (err, file) => {
         title: file ? "Browser reloaded" : "Browser opened",
         task: () => wait(300),
       },
-    ]).run();
+    ]).run({ file });
   } catch (error) {
     console.log("ERROR:", error);
   } finally {

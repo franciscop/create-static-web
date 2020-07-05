@@ -12,24 +12,22 @@ const liquid = (...args) => engine.parseAndRender(...args);
 
 const templates = {};
 
-module.exports = async (files) =>
+module.exports = async (ctx, task) =>
   new Observable(async (observable) => {
     try {
       const handlebars = require("handlebars");
       const ignore = await ignoreFiles();
+      const files = walk().filter(ignore);
 
-      const base = walk().filter(ignore);
-      files = files && /\.md/.test(files) ? swear([files]) : base;
-
-      const liq = await base
+      const liq = await files
         .filter(isPartial)
-        .filter((file) => /\.liquid/.test(file))
+        .filter(/\.liquid$/)
         .map(async (file) => [await clean(file), await read(file)])
         .reduce((obj, [name, value]) => ({ ...obj, [name]: value }), {});
 
-      await base
+      await files
         .filter(isFull)
-        .filter((file) => /\.liquid/.test(file))
+        .filter(/\.liquid$/)
         .map(async (file) => ({
           name: await clean(file),
           folder: await dir(file),
@@ -41,19 +39,23 @@ module.exports = async (files) =>
             data.name === "readme" ? data.folder.split("/").pop() : data.name;
           data.name = data.name === "readme" ? "index" : data.name;
           const file = await join(data.folder, data.name + ".html");
-          const html = await liquid(body, { ...data, ...attributes });
+          const html = await liquid(body, {
+            ...data,
+            ...attributes,
+            config: ctx,
+          });
           return write(file, html);
         });
 
-      const hbs = await base
+      const hbs = await files
         .filter(isPartial)
-        .filter((file) => /\.hbs/.test(file))
+        .filter(/\.hbs$/)
         .map(async (file) => [await clean(file), await read(file)])
         .map(([name, content]) => handlebars.registerPartial(name, content));
 
-      await base
+      await files
         .filter(isFull)
-        .filter((file) => /\.hbs/.test(file))
+        .filter(/\.hbs$/)
         .map(async (file) => ({
           name: await clean(file),
           folder: await dir(file),
@@ -65,13 +67,17 @@ module.exports = async (files) =>
             data.name === "readme" ? data.folder.split("/").pop() : data.name;
           data.name = data.name === "readme" ? "index" : data.name;
           const file = await join(data.folder, data.name + ".html");
-          const html = handlebars.compile(body)({ ...data, ...attributes });
+          const html = handlebars.compile(body)({
+            ...data,
+            ...attributes,
+            config: ctx,
+          });
           return write(file, html);
         });
 
       await files
         .filter(isFull)
-        .filter((file) => /\.md/.test(file))
+        .filter(/\.md$/)
         .map(async (file) => ({
           name: await clean(file),
           folder: await dir(file),
@@ -85,7 +91,7 @@ module.exports = async (files) =>
         .filter(({ layout }) => layout)
         .map(({ body, ...data }) => {
           const content = marked(body);
-          return { ...data, content, body: content };
+          return { ...data, content, body: content, config: ctx };
         })
         .map(async (data) => {
           data.id =
@@ -105,8 +111,10 @@ module.exports = async (files) =>
             return write(file, html);
           }
         });
-      observable.complete();
     } catch (error) {
+      task.skip(error.message);
       console.error("ERROR:", error);
+    } finally {
+      observable.complete();
     }
   });
