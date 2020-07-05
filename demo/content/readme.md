@@ -6,3 +6,6 @@ layout: web.hbs
 
 
 This is an example of a simple hello world
+
+
+## .subCat()

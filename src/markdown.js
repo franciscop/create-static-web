@@ -4,6 +4,18 @@ const fm = require("front-matter");
 const Observable = require("zen-observable");
 const marked = require("marked");
 const Liquid = require("liquidjs");
+const slugify = require("@sindresorhus/slugify");
+
+// Override function
+const renderer = {
+  heading: (text, level) => `
+    <h${level} id="${slugify(text)}">
+      ${text}
+    </h${level}>
+  `,
+};
+
+marked.use({ renderer });
 
 const { clean, ignoreFiles, isFull, isPartial } = require("./helpers");
 
