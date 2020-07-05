@@ -1,5 +1,5 @@
-const { abs, dir, join, read, walk, write } = require("fs-array");
-const magic = require("magic-promises");
+const { dir, join, read, walk, write } = require("files");
+const swear = require("swear");
 const fm = require("front-matter");
 const Observable = require("zen-observable");
 const marked = require("marked");
@@ -16,22 +16,23 @@ module.exports = async (files) =>
   new Observable(async (observable) => {
     try {
       const handlebars = require("handlebars");
+      const ignore = await ignoreFiles();
 
-      const base = walk().filter(await ignoreFiles());
-      files = files && /\.md/.test(files) ? magic([files]) : base;
+      const base = walk().filter(ignore);
+      files = files && /\.md/.test(files) ? swear([files]) : base;
 
       const liq = await base
         .filter(isPartial)
         .filter((file) => /\.liquid/.test(file))
-        .map(async (file) => [clean(file), await read(file)])
+        .map(async (file) => [await clean(file), await read(file)])
         .reduce((obj, [name, value]) => ({ ...obj, [name]: value }), {});
 
       await base
         .filter(isFull)
         .filter((file) => /\.liquid/.test(file))
         .map(async (file) => ({
-          name: clean(file),
-          folder: dir(file),
+          name: await clean(file),
+          folder: await dir(file),
           text: await read(file),
         }))
         .map(async ({ text, ...data }) => {
@@ -39,7 +40,7 @@ module.exports = async (files) =>
           data.id =
             data.name === "readme" ? data.folder.split("/").pop() : data.name;
           data.name = data.name === "readme" ? "index" : data.name;
-          const file = join(data.folder, data.name + ".html");
+          const file = await join(data.folder, data.name + ".html");
           const html = await liquid(body, { ...data, ...attributes });
           return write(file, html);
         });
@@ -47,23 +48,23 @@ module.exports = async (files) =>
       const hbs = await base
         .filter(isPartial)
         .filter((file) => /\.hbs/.test(file))
-        .map(async (file) => [clean(file), await read(file)])
+        .map(async (file) => [await clean(file), await read(file)])
         .map(([name, content]) => handlebars.registerPartial(name, content));
 
       await base
         .filter(isFull)
         .filter((file) => /\.hbs/.test(file))
         .map(async (file) => ({
-          name: clean(file),
-          folder: dir(file),
+          name: await clean(file),
+          folder: await dir(file),
           text: await read(file),
         }))
-        .map(({ text, ...data }) => {
+        .map(async ({ text, ...data }) => {
           const { attributes, body } = fm(text);
           data.id =
             data.name === "readme" ? data.folder.split("/").pop() : data.name;
           data.name = data.name === "readme" ? "index" : data.name;
-          const file = join(data.folder, data.name + ".html");
+          const file = await join(data.folder, data.name + ".html");
           const html = handlebars.compile(body)({ ...data, ...attributes });
           return write(file, html);
         });
@@ -72,8 +73,8 @@ module.exports = async (files) =>
         .filter(isFull)
         .filter((file) => /\.md/.test(file))
         .map(async (file) => ({
-          name: clean(file),
-          folder: dir(file),
+          name: await clean(file),
+          folder: await dir(file),
           text: await read(file),
         }))
         .map(({ text, ...data }) => ({ ...data, ...fm(text) }))
@@ -90,17 +91,17 @@ module.exports = async (files) =>
           data.id =
             data.name === "readme" ? data.folder.split("/").pop() : data.name;
           const name = data.name === "readme" ? "index" : data.name;
-          const file = join(data.folder, name + ".html");
+          const file = await join(data.folder, name + ".html");
 
           if (/\.liquid/.test(data.layout)) {
-            const html = await liquid(liq[clean(data.layout)], data);
+            const html = await liquid(liq[await clean(data.layout)], data);
             return write(file, html);
           }
 
           if (/\.hbs/.test(data.layout)) {
-            const html = handlebars.compile(`{{> ${clean(data.layout)}}}`)(
-              data
-            );
+            const html = handlebars.compile(
+              `{{> ${await clean(data.layout)}}}`
+            )(data);
             return write(file, html);
           }
         });
