@@ -31,7 +31,6 @@ const compile = async (err, file) => {
       },
       {
         title: "Reading configuration",
-        skip: () => file && !/static\.config\.js$/.test(file),
         task: config,
       },
       {
