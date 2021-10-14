@@ -30,13 +30,15 @@ Front-matter enabled website
 Also your `_hello.hbs` file:
 
 ```js
-<p>{{ body }}</p>
+<main>{{ body }}</main>
 ```
 
 Voila! Your site should be ready to go:
 
 ```html
+<main>
 <p>Front-matter enabled website</p>
+</main>
 ```
 
 
