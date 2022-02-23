@@ -1,6 +1,6 @@
 const { abs, walk, write } = require("files");
 const swear = require("swear");
-const sass = require("node-sass");
+const sass = require("sass");
 const { ignoreFiles, isPartial, isFull } = require("./helpers");
 
 const dest = (file) => file.replace(/\.s(a|c)ss$/, ".min.css");

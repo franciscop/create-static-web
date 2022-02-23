@@ -31,8 +31,8 @@
     "listr": "^0.14.1",
     "live-server": "^1.2.1",
     "marked": "^1.1.0",
-    "node-sass": "^4.14.1",
     "node-watch": "^0.7.1",
+    "sass": "^1.49.8",
     "swear": "^1.1.0",
     "zen-observable": "^0.8.15"
   },
