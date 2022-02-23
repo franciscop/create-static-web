@@ -1,6 +1,6 @@
 {
   "name": "create-static-web",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "Create static websites easily with the expected defaults",
   "main": "index.js",
   "bin": {
