@@ -12,11 +12,11 @@ module.exports = async (ctx, task) => {
   return new Observable(async (observer) => {
     try {
       observer.next("Checking imagemagick");
-      await cmd(`convert --version`);
+      await cmd(`magick --version`);
     } catch (error) {
       if (/command not found/.test(error.message)) {
         task.skip(
-          "Imagemagick not available, please install via 'brew install imagemagick'"
+          "Imagemagick not available, please install via 'brew install imagemagick'",
         );
       } else {
         throw error;
