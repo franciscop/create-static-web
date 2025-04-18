@@ -28,7 +28,7 @@ module.exports = async (ctx, task) => {
     await files
       .filter(ignoreFiles)
       .filter(/\.src\.jpe?g$/)
-      .map((file) => cmd(`convert ${file} -quality ${q}% ${dest(file, q)}`));
+      .map((file) => cmd(`magick ${file} -quality ${q}% ${dest(file, q)}`));
 
     observer.complete();
   });
