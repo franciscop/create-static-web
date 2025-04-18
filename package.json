@@ -23,7 +23,8 @@
   "license": "MIT",
   "dependencies": {
     "@sindresorhus/slugify": "^1.0.0",
-    "files": "^1.1.0",
+    "atocha": "^2.0.0",
+    "files": "^3.0.2",
     "front-matter": "^2.3.0",
     "handlebars": "^4.7.6",
     "ignore": "^4.0.2",

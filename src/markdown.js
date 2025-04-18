@@ -59,7 +59,7 @@ module.exports = async (ctx, task) =>
           return write(file, html);
         });
 
-      const hbs = await files
+      await files
         .filter(isPartial)
         .filter(/\.hbs$/)
         .map(async (file) => [await clean(file), await read(file)])
@@ -103,12 +103,18 @@ module.exports = async (ctx, task) =>
         .filter(({ layout }) => layout)
         .map(({ body, ...data }) => {
           const content = marked(body);
+          console.log(body, data);
           return { ...data, content, body: content, config: ctx };
         })
         .map(async (data) => {
           data.id =
             data.name === "readme" ? data.folder.split("/").pop() : data.name;
           const name = data.name === "readme" ? "index" : data.name;
+          data.title = data.title
+            ? marked(data.title)
+                .trim()
+                .replace(/\<\/?p\s?\>/g, "")
+            : "";
           const file = await join(data.folder, name + ".html");
 
           if (/\.liquid/.test(data.layout)) {
@@ -118,7 +124,7 @@ module.exports = async (ctx, task) =>
 
           if (/\.hbs/.test(data.layout)) {
             const html = handlebars.compile(
-              `{{> ${await clean(data.layout)}}}`
+              `{{> ${await clean(data.layout)}}}`,
             )(data);
             return write(file, html);
           }
