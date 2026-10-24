@@ -1,6 +1,6 @@
 {
   "name": "create-static-web",
-  "version": "0.9.6",
+  "version": "0.10.0",
   "description": "Create static websites easily with the expected defaults",
   "repository": "github:franciscop/create-static-web",
   "author": "Francisco Presencia <public@francisco.io> (https://francisco.io/)",
