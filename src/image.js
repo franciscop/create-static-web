@@ -1,4 +1,4 @@
-const { abs, walk, write } = require("files");
+const { walk } = require("files");
 const { default: cmd } = require("atocha");
 const Observable = require("zen-observable");
 const { ignoreFiles } = require("./helpers");

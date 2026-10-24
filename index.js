@@ -38,7 +38,7 @@ const compile = async (err, file) => {
         skip: () =>
           file &&
           !/\.(md|hbs|liquid)$/.test(file) &&
-          !/static\.config\.js$/.test(file),
+          !file.endsWith("static.config.js"),
         task: markdown,
       },
       {
@@ -46,7 +46,7 @@ const compile = async (err, file) => {
         skip: () =>
           file &&
           !/\.(sass|scss)$/.test(file) &&
-          !/static\.config\.js$/.test(file),
+          !file.endsWith("static.config.js"),
         task: sass,
       },
       {
@@ -54,13 +54,13 @@ const compile = async (err, file) => {
         skip: () =>
           file &&
           !/\.src\.jpe?g$/.test(file) &&
-          !/static\.config\.js$/.test(file),
+          !file.endsWith("static.config.js"),
         task: image,
       },
       {
         title: "[TODO] Javascript: .src.js → .min.js",
         skip: () =>
-          file && !/\.src\.js$/.test(file) && !/static\.config\.js$/.test(file),
+          file && !file.endsWith(".src.js") && !file.endsWith("static.config.js"),
         task: () => wait(300),
       },
       {

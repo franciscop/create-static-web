@@ -1,5 +1,4 @@
 const { dir, join, read, walk, write } = require("files");
-const swear = require("swear");
 const fm = require("front-matter");
 const Observable = require("zen-observable");
 const marked = require("marked");
@@ -21,8 +20,6 @@ const { clean, ignoreFiles, isFull, isPartial } = require("./helpers");
 
 const engine = Liquid();
 const liquid = (...args) => engine.parseAndRender(...args);
-
-const templates = {};
 
 module.exports = async (ctx, task) =>
   new Observable(async (observable) => {
@@ -96,10 +93,10 @@ module.exports = async (ctx, task) =>
           text: await read(file),
         }))
         .map(({ text, ...data }) => ({ ...data, ...fm(text) }))
-        .map(({ attributes, frontmatter, ...rest }) => ({
-          ...rest,
-          ...attributes,
-        }))
+        .map((data) => {
+          const { attributes, frontmatter: _, ...rest } = data;
+          return { ...rest, ...attributes };
+        })
         .filter(({ layout }) => layout)
         .map(({ body, ...data }) => {
           const content = marked(body);
@@ -113,7 +110,7 @@ module.exports = async (ctx, task) =>
           data.title = data.title
             ? marked(data.title)
                 .trim()
-                .replace(/\<\/?p\s?\>/g, "")
+                .replace(/<\/?p\s?>/g, "")
             : "";
           const file = await join(data.folder, name + ".html");
 

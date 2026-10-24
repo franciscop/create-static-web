@@ -1,4 +1,4 @@
-# Create-Static-Web
+# Create-Static-Web [![npm install create-static-web](https://img.shields.io/badge/npm%20install-create--static--web-blue.svg)](https://www.npmjs.com/package/create-static-web) [![tests](https://github.com/franciscop/create-static-web/workflows/tests/badge.svg)](https://github.com/franciscop/create-static-web/actions)
 
 Another static site generator:
 

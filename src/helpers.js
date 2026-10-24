@@ -17,7 +17,7 @@ const ignoreFiles = async () => {
 // Get a consistent, nice filename
 const clean = (file) =>
   name(file)
-    .replace(/^\_/, "")
+    .replace(/^_/, "")
     .replace(/\.[a-zA-Z]+$/, "");
 
 module.exports = {
