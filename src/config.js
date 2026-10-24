@@ -1,10 +1,16 @@
-const { abs, exists } = require("files");
+import { createRequire } from "node:module";
+import { pathToFileURL } from "node:url";
+import { abs, exists } from "files";
 
-module.exports = async (ctx) => {
+const require = createRequire(import.meta.url);
+
+export default async (ctx) => {
   if (await exists("./static.config.js")) {
     const file = await abs("./static.config.js");
+    // Bust the CJS (delete) and ESM (query) caches so edits apply on reload
     delete require.cache[require.resolve(file)];
-    let fn = require(file);
+    const url = `${pathToFileURL(file)}?t=${Date.now()}`;
+    let fn = (await import(url)).default;
     if (typeof fn === "function") {
       fn = await fn(ctx);
     }

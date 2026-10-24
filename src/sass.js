@@ -1,12 +1,12 @@
-const { walk, write } = require("files");
-const sass = require("sass");
-const { ignoreFiles, isFull } = require("./helpers");
+import { walk, write } from "files";
+import * as sass from "sass";
+import { ignoreFiles, isFull } from "./helpers.js";
 
 const dest = (file) => file.replace(/\.s(a|c)ss$/, ".min.css");
 const render = (file) =>
   sass.renderSync({ file, outputStyle: "compressed" }).css.toString();
 
-module.exports = async () => {
+export default async () => {
   const ignore = await ignoreFiles();
   return walk()
     .filter(ignore)

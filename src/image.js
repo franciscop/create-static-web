@@ -1,11 +1,11 @@
-const { walk } = require("files");
-const { default: cmd } = require("atocha");
-const Observable = require("zen-observable");
-const { ignoreFiles } = require("./helpers");
+import { walk } from "files";
+import cmd from "atocha";
+import Observable from "zen-observable";
+import { ignoreFiles } from "./helpers.js";
 
 const dest = (file, q) => file.replace(/\.src\.jpe?g$/, `.q${q}.jpg`);
 
-module.exports = async (ctx, task) => {
+export default async (ctx, task) => {
   const files = walk();
   const q = ctx.quality || 50;
 

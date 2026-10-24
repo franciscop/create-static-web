@@ -1,14 +1,14 @@
 #! /usr/bin/env node
 
 // Static website generator
-const watch = require("node-watch");
-const Listr = require("listr");
-const { start } = require("live-server");
+import watch from "node-watch";
+import Listr from "listr";
+import liveServer from "live-server";
 
-const config = require("./src/config");
-const markdown = require("./src/markdown");
-const sass = require("./src/sass");
-const image = require("./src/image");
+import config from "./src/config.js";
+import markdown from "./src/markdown.js";
+import sass from "./src/sass.js";
+import image from "./src/image.js";
 
 const filter = /\.(js|sass|scss|md|hbs|liqui|jpg|jpeg)$/;
 const wait = (time) => new Promise((resolve) => setTimeout(resolve, time));
@@ -19,7 +19,7 @@ const compile = async (err, file) => {
   if (running) return;
   running = true;
   // Clear the console
-  process.stdout.write("\033c");
+  process.stdout.write("\x1Bc");
   console.log("📜 Create Static Web");
   try {
     await new Listr([
@@ -77,7 +77,7 @@ const compile = async (err, file) => {
 
 watch(process.cwd(), { recursive: true, filter }, compile);
 compile();
-start({
+liveServer.start({
   port: 3000,
   host: "localhost",
   logLevel: 0,

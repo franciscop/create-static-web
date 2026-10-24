@@ -1,30 +1,32 @@
-const { dir, join, read, walk, write } = require("files");
-const fm = require("front-matter");
-const Observable = require("zen-observable");
-const marked = require("marked");
-const Liquid = require("liquidjs");
-const slugify = require("@sindresorhus/slugify");
+import { dir, join, read, walk, write } from "files";
+import fm from "front-matter";
+import handlebars from "handlebars";
+import Observable from "zen-observable";
+import { marked } from "marked";
+import { Liquid } from "liquidjs";
+import slugify from "@sindresorhus/slugify";
+import { clean, ignoreFiles, isFull, isPartial } from "./helpers.js";
 
 // Override function
 const renderer = {
-  heading: (text, level) => `
-    <h${level} id="${slugify(text)}">
+  heading({ tokens, depth }) {
+    const text = this.parser.parseInline(tokens);
+    return `
+    <h${depth} id="${slugify(text)}">
       ${text}
-    </h${level}>
-  `,
+    </h${depth}>
+  `;
+  },
 };
 
 marked.use({ renderer });
 
-const { clean, ignoreFiles, isFull, isPartial } = require("./helpers");
-
-const engine = Liquid();
+const engine = new Liquid();
 const liquid = (...args) => engine.parseAndRender(...args);
 
-module.exports = async (ctx, task) =>
+export default async (ctx, task) =>
   new Observable(async (observable) => {
     try {
-      const handlebars = require("handlebars");
       const ignore = await ignoreFiles();
       const files = walk().filter(ignore);
 

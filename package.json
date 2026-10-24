@@ -21,23 +21,25 @@
     "web": "index.js"
   },
   "main": "index.js",
+  "type": "module",
   "files": [
-    "src"
+    "src",
+    "!src/*.test.js"
   ],
   "dependencies": {
-    "@sindresorhus/slugify": "^1.0.0",
-    "atocha": "^2.0.0",
+    "@sindresorhus/slugify": "^3.0.1",
+    "atocha": "^4.0.0",
     "files": "^3.0.2",
-    "front-matter": "^2.3.0",
-    "handlebars": "^4.7.6",
-    "ignore": "^4.0.2",
-    "liquidjs": "^4.0.0",
-    "listr": "^0.14.1",
-    "live-server": "^1.2.1",
-    "marked": "^1.1.0",
-    "node-watch": "^0.7.1",
-    "sass": "^1.49.8",
-    "zen-observable": "^0.8.15"
+    "front-matter": "^4.0.2",
+    "handlebars": "^4.7.10",
+    "ignore": "^7.0.14",
+    "liquidjs": "^10.30.0",
+    "listr": "^0.14.3",
+    "live-server": "^1.2.2",
+    "marked": "^18.1.1",
+    "node-watch": "^0.7.4",
+    "sass": "^1.106.1",
+    "zen-observable": "^0.10.0"
   },
   "devDependencies": {
     "oxlint": "^1.89.0"
